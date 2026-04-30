@@ -1,0 +1,89 @@
+Sherlock Scenario
+An APT group is using Hajj-themed phishing lures to target and steal WhatsApp data from government and diplomatic officials. Our team has gathered fragmented intelligence from public cybersecurity vendor reports, blog posts, and internal security alerts. Your task is to build a comprehensive profile of the threat actor responsible. You must connect the dots between different reports to answer questions about their identity, tools, and motives.
+
+Below are the sites we have compiled, use these to answer the following questions. (If any of the sites become unavailable please check on wayback machine as they all have been saved).
+
+Evidence - 1 - https://securelist.com/mysterious-elephant-apt-ttps-and-tools/117596/ Evidence - 2 - https://medium.com/@knownsec404team/apt-k-47-mysterious-elephant-a-new-apt-organization-in-south-asia-5c66f954477 Evidence - 3 - https://medium.com/@knownsec404team/unveiling-the-past-and-present-of-apt-k-47-weapon-asyncshell-5a98f75c2d68
+
+
+so we are given with these.
+
+So we have first question which is what is name of APT group -> Mysterious Elephant.
+
+2.  According to the Knownsec 404 team's analysis(Evidence -3), since which year has this group's attack activity been dated back to?
+
+-> So after reading more about the articles and knowing that Knownsec is date back from 2022
+
+3. The group uses a custom backdoor that communicates via Office Remote Procedure Call (ORPCBackdoor). According to the Knownsec 404 team's analysis(Evidence -2), what is the name of the first malicious exported entry function?
+
+3.1 Overview of sample functions
+ORPCBackdoor has a total of 17 export functions, and the relevant export function names are as follows:
+
+GetFileVersionInfoA
+GetFileVersionInfoByHandle
+GetFileVersionInfoExW
+GetFileVersionInfoSizeA
+GetFileVersionInfoSizeExW
+GetFileVersionInfoSizeW
+GetFileVersionInfoW
+VerFindFileA
+VerFindFileW
+VerInstallFileA
+VerInstallFileW
+VerLanguageNameA
+VerLanguageNameW
+VerQueryValueA
+VerQueryValueW
+GetFileVersionInfoByHandleEx(void) -> ans
+DllEntryPoint
+
+4. The previously mentioned backdoor checks for a file before creating persistence. What is the name of the file?
+
+ts.dat is the file created by it.
+
+5. The use of the backdoor links the APT to another well-known South Asian APT group. What is the name of this other group?
+
+bitter is another group that has been linked to it.
+
+6. The APT group we are currently investigating has consistently used and updated another backdoor since 2023, with its C2 communication evolving from TCP to HTTPS. What is the name of this tool?
+-> Asyncshell-v2 this technique is being used by this group from 2024 which automatically adds and update communication tactics for attackers.
+
+7. To evade sandbox analysis, the MemLoader HidenDesk tool checks the number of active processes before running. What is the minimum number of processes required for it to proceed?
+
+-> 40 you cango through page and u will see about 40 page group thing.
+
+8.  The MemLoader HidenDesk tool creates a covert environment for its activities by creating and switching to a specific environment. What is the name of this hidden desktop?
+
+->  The malware then creates a hidden desktop named “MalwareTech_Hidden” and switches to it, providing a covert environment for its activities. This technique is borrowed from an open-source project on GitHub.
+
+9. The MemLoader HidenDesk tool achieves persistence by placing a shortcut in the autostart folder to ensure it runs after a system reboot. What is the MITRE ATT&CK ID for the 'Registry Run Keys / Startup Folder' technique?
+
+-> The MITRE ATT&CK ID for the 'Registry Run Keys / Startup Folder' technique is T1547.001, which falls under the broader Boot or Logon Autostart Execution technique (T1547). This technique involves placing malicious files or shortcuts in startup directories or modifying registry keys to ensure persistence.
+
+10. The actor uses several custom exfiltration tools targeting WhatsApp. What is the name of the tool that recursively searches specific directories, including the “Desktop” and “Downloads” folders?
+
+->  Stom Exfiltrator
+The Stom Exfiltrator is a commonly used exfiltration tool that recursively searches specific directories, including the “Desktop” and “Downloads” folders, as well as all drives except the C drive, to collect files with predefined extensions. Its latest variant is specifically designed to target files shared through the WhatsApp application. This version uses a hardcoded folder path to locate and exfiltrate such files:
+
+11. Kaspersky's analysis highlights the actor's heavy use of scripts for execution and deploying payloads. What is the MITRE ATT&CK ID for the 'PowerShell' technique?
+
+T1059.001
+
+12. In their early attack chains, Mysterious Elephant used a downloader that was previously associated with the Origami Elephant group. What was the name of this downloader?
+
+-> The actor’s early attack chains featured distinctive elements, such as remote template injections and exploitation of CVE-2017-11882, followed by the use of a downloader called “Vtyrei”, 
+
+
+13. In a January 2024 campaign delivering an Asyncshell payload, which CVE was exploited in the malicious archive file?
+
+-> CVE-2023-38831 this cve was exploited to achieve malicous archive files.
+
+14. 
+What is the MD5 hash of the ChromeStealer Exfiltrator sample named WhatsAppOB.exe?
+
+-> ChromeStealer Exfiltrator
+9e50adb6107067ff0bab73307f5499b6 WhatsAppOB.exe
+
+15. The intelligence describes multiple custom tools designed to upload stolen data to the actor's servers. According to the MITRE ATT&CK framework, what is the ID for the 'Exfiltration Over C2 Channel' technique?
+
+-> According to the MITRE ATT&CK framework, the ID for the Exfiltration Over C2 Channel technique is T1041.
